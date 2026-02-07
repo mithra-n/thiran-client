@@ -54,6 +54,7 @@ service cloud.firestore {
                          request.auth.uid == participantId;
         
         allow delete: if isAuthenticated() && 
+                         isPSGEmail() &&
                          request.auth.uid == participantId;
         
         // No updates to registration data
