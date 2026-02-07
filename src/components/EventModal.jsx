@@ -17,6 +17,12 @@ const EventModal = ({ event, onClose }) => {
       if (user) {
         const registered = await isUserRegistered(event.id, user.uid);
         setAlreadyRegistered(registered);
+      } else {
+        // Reset registration-related state when there is no user
+        setAlreadyRegistered(false);
+        setSuccess(false);
+        setError('');
+        setIsRegistering(false);
       }
     };
     checkRegistration();
