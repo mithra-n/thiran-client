@@ -18,7 +18,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeLink, setActiveLink] = useState('Home');
-  const { user, signInWithGoogle, signOut, loading, isAdmin } = useAuth();
+  const { user, signInWithGoogle, loading, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
