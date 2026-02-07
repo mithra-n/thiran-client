@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { useInView, AnimatePresence, motion } from 'framer-motion';
 import { Rocket, Trophy, Users, Lightbulb, Zap, Target } from 'lucide-react';
 import { Badge } from './ui/Badge';
 
@@ -35,8 +35,8 @@ const features = [
 ];
 
 const stats = [
-  { value: '20+', label: 'Events', icon: Target },
-  { value: '1000+', label: 'Participants', icon: Users },
+  { value: '5+', label: 'Events', icon: Target },
+  { value: '100+', label: 'Participants', icon: Users },
   { value: '₹1L+', label: 'Prize Pool', icon: Trophy },
   { value: '3', label: 'Days', icon: Zap },
 ];
@@ -45,27 +45,6 @@ const WhyThiran = () => {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
   const [selected, setSelected] = useState(null);
-
-  // Animation variants for cards (premium, smooth)
-  const gridCardVariants = {
-    initial: { opacity: 0, scale: 0.96 },
-    animate: {
-      opacity: 1,
-      scale: 1,
-      transition: {
-        duration: 0.6,
-        ease: [0.22, 1, 0.36, 1], // softer cubic-bezier
-      },
-    },
-    exit: {
-      opacity: 0,
-      scale: 0.96,
-      transition: {
-        duration: 0.45,
-        ease: [0.22, 1, 0.36, 1],
-      },
-    },
-  };
 
   return (
     <section
@@ -104,101 +83,98 @@ const WhyThiran = () => {
 
           <div className="flex flex-col items-center w-full mt-8 sm:mt-10 lg:mt-12">
             <span className="text-base sm:text-lg lg:text-xl text-gray-400 font-normal max-w-3xl w-full text-center leading-relaxed px-4">
-              Thiran, meaning{' '}
-              <span className="text-purple-400 font-medium">"ability"</span> or{' '}
-              <span className="text-pink-400 font-medium">"skill"</span> in Tamil,
+              Thiran is more than just a tech fest.
             </span>
             <span className="text-base sm:text-lg lg:text-xl text-gray-400 font-normal max-w-3xl w-full text-center leading-relaxed px-4">
-              is PSG Tech's premier intra-college technical festival.
+              Its a platform for innovation, creativity and excellence.
             </span>
             <span className="text-base sm:text-lg lg:text-xl text-gray-400 font-normal max-w-3xl w-full text-center leading-relaxed px-4">
-              Where passion meets opportunity.
+              Join us to witness the future of technology unfold.
             </span>
           </div>
         </motion.div>
 
-        {/* Feature cards - Grid & Expand on Click (no hover logic) */}
-        <div className="relative mb-12 sm:mb-16 lg:mb-20 min-h-[340px]">
-          <AnimatePresence initial={false}>
-            {selected === null ? (
-              <motion.div
-                key="grid"
-                className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 place-items-center"
-                layout
-                variants={gridCardVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-              >
-                {features.map((feature, idx) => {
-                  const Icon = feature.icon;
-                  return (
-                    <motion.div
-                      key={feature.title}
-                      className="group relative cursor-pointer w-full max-w-[280px]"
-                      layoutId={`feature-card-${idx}`}
-                      layout
-                      whileTap={{ scale: 0.97 }}
-                      onClick={() => setSelected(idx)}
-                      variants={gridCardVariants}
-                    >
-                      <div className="bg-black/30 backdrop-blur-lg relative border-2 border-transparent group-hover:border-pink-400 group-hover:border-purple-400 group-hover:shadow-pink-400/30 group-hover:shadow-lg rounded-2xl sm:rounded-3xl p-4 sm:p-5 h-full overflow-hidden transition-all duration-300">
-                        <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-br from-white/20 to-transparent rounded-t-2xl pointer-events-none" />
-                        <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-4 shadow-lg`}>
-                          <Icon className="w-5 h-5 text-white" />
-                        </div>
-                        <h3 className="font-heading text-base sm:text-lg font-bold text-white mb-2 text-center">
-                          {feature.title}
-                        </h3>
-                        <p className="text-white/80 text-xs sm:text-sm leading-relaxed text-center">
-                          {feature.description}
-                        </p>
-                        <div className="absolute inset-0 pointer-events-none rounded-2xl sm:rounded-3xl border border-gradient-to-br from-pink-400 to-purple-400 opacity-40" />
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </motion.div>
-            ) : (
-              <motion.div
-                key="expanded"
-                className="flex justify-center items-center min-h-[340px]"
-                layout
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1.08, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } }}
-                exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } }}
-              >
+        {/* Feature cards - Accordion */}
+        <div className="relative mb-40 sm:mb-48 lg:mb-56 px-4 sm:px-0">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-12 sm:gap-16 lg:gap-20 place-items-center">
+            {features.map((feature, idx) => {
+              const Icon = feature.icon;
+              const expanded = selected === idx;
+              return (
                 <motion.div
-                  className="bg-black/30 backdrop-blur-xl relative border-2 border-transparent rounded-3xl p-10 sm:p-12 h-full overflow-hidden transition-all duration-300"
-                  layoutId={`feature-card-${selected}`}
+                  key={feature.title}
+                  className="group relative cursor-pointer w-full max-w-[260px]"
                   layout
-                  onClick={() => setSelected(null)}
-                  initial={{ opacity: 0, scale: 0.96 }}
-                  animate={{ opacity: 1, scale: 1.08, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } }}
-                  exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } }}
+                  onClick={() => setSelected(expanded ? null : idx)}
+                  initial={false}
+                  animate={
+                    expanded
+                      ? { scale: 1.04, y: 0, boxShadow: '0 0 0 0 rgba(236, 72, 153, 0)' }
+                      : {
+                        y: [0, -6, 0, 6, 0],
+                        scale: [1, 1.015, 1, 0.985, 1],
+                        boxShadow: [
+                          '0 4px 24px 0 rgba(236, 72, 153, 0.10)',
+                          '0 8px 32px 0 rgba(168, 85, 247, 0.13)',
+                          '0 4px 24px 0 rgba(236, 72, 153, 0.10)',
+                          '0 0px 16px 0 rgba(168, 85, 247, 0.10)',
+                          '0 4px 24px 0 rgba(236, 72, 153, 0.10)'
+                        ]
+                      }
+                  }
+                  transition={
+                    expanded
+                      ? { type: 'spring', stiffness: 300, damping: 30 }
+                      : {
+                        duration: 6,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                        times: [0, 0.25, 0.5, 0.75, 1]
+                      }
+                  }
+                  whileHover={
+                    expanded
+                      ? {}
+                      : { scale: 1.045, boxShadow: '0 8px 32px 0 rgba(236, 72, 153, 0.18)' }
+                  }
+                  whileTap={expanded ? {} : { scale: 0.98 }}
                 >
-                  <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-br from-white/20 to-transparent rounded-t-3xl pointer-events-none" />
-                  {(() => { const Icon = features[selected].icon; return (
-                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${features[selected].gradient} flex items-center justify-center mb-8 shadow-lg mx-auto`}>
-                      <Icon className="w-8 h-8 text-white" />
+                  <div className="bg-black/30 backdrop-blur-lg relative border-2 border-transparent group-hover:border-pink-400 group-hover:border-purple-400 group-hover:shadow-pink-400/30 group-hover:shadow-lg rounded-2xl sm:rounded-3xl p-2 sm:p-5 min-h-[120px] sm:min-h-[200px] h-full overflow-hidden transition-all duration-300 flex flex-col items-center justify-center">
+                    <div className={`flex flex-col items-center w-full h-full transition-all duration-300 ${expanded ? 'justify-start' : 'justify-center flex-1'}`}>
+                      <div className={`w-8 h-8 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-1 sm:mb-2 shadow-lg transition-all duration-300 ${expanded ? '' : 'mx-auto'}`}>
+                        <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                      </div>
+                      <h3 className="font-heading text-sm sm:text-lg font-bold text-white mb-1 sm:mb-2 text-center select-none flex items-center justify-center min-h-[2rem] sm:min-h-[2.5rem]">
+                        {feature.title}
+                      </h3>
+                      <AnimatePresence initial={false}>
+                        {expanded && (
+                          <motion.div
+                            key="desc"
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                            className="w-full flex flex-col items-center"
+                          >
+                            <p className="text-white/80 text-xs sm:text-sm leading-relaxed text-center mb-2">
+                              {feature.description}
+                            </p>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
-                  ); })()}
-                  <h3 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-4 text-center">
-                    {features[selected].title}
-                  </h3>
-                  <p className="text-white/80 text-base sm:text-lg leading-relaxed text-center">
-                    {features[selected].description}
-                  </p>
-                  <div className="absolute inset-0 pointer-events-none rounded-3xl border border-gradient-to-br from-pink-400 to-purple-400 opacity-50" />
+                    <div className="absolute inset-0 pointer-events-none rounded-2xl sm:rounded-3xl border border-gradient-to-br from-pink-400 to-purple-400 opacity-40" />
+                  </div>
                 </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+              );
+            })}
+          </div>
         </div>
 
         {/* Stats section */}
         <motion.div
-          className="bg-gradient-to-br from-purple-500/5 to-pink-500/5 border border-white/[0.08] backdrop-blur-xl rounded-2xl sm:rounded-3xl p-5 sm:p-8 lg:p-12"
+          className="mt-16 bg-gradient-to-br from-purple-500/5 to-pink-500/5 border border-white/[0.08] backdrop-blur-xl rounded-2xl sm:rounded-3xl p-5 sm:p-8 lg:p-12"
           initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.4 }}
