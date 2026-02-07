@@ -7,11 +7,11 @@ import {
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, googleProvider, db } from './firebase';
 
-const AuthContext = createContext({});
+const AuthContext = createContext(null);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
+  if (context === null) {
     throw new Error('useAuth must be used within AuthProvider');
   }
   return context;
