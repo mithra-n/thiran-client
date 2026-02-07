@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Sparkles, ChevronRight } from 'lucide-react';
+import { Menu, X, Sparkles, LogIn, User, Shield } from 'lucide-react';
 import { Button } from './ui/Button';
 import { cn } from '../lib/utils';
+import { useAuth } from '../lib/authContext';
+import UserMenu from './UserMenu';
+import { useNavigate } from 'react-router-dom';
 
 const navLinks = [
   { name: 'Home', href: '#home' },
@@ -15,6 +18,8 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeLink, setActiveLink] = useState('Home');
+  const { user, signInWithGoogle, signOut, loading, isAdmin } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -95,41 +100,47 @@ const Navbar = () => {
             ))}
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+             {/* Admin Dashboard Link */}
+             {isAdmin && (
+               <motion.button
+                 onClick={() => navigate('/admin')}
+                 whileHover={{ scale: 1.02 }}
+                 whileTap={{ scale: 0.98 }}
+                 className="hidden md:flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400 hover:bg-purple-500/20 transition-colors"
+               >
+                 <Shield size={16} />
+                 <span className="text-sm font-medium">Admin</span>
+               </motion.button>
+             )}
+             
              {/* CTA Button - Desktop */}
-             <div className="hidden md:block">
-              <Button 
-                variant="primary" 
-                size="sm"
-                className="rounded-full px-6 h-9 bg-white text-black hover:bg-white/90 border-0"
-                onClick={() => document.getElementById('events').scrollIntoView({ behavior: 'smooth' })}
-              >
-                <span className="font-semibold">Register</span>
-              </Button>
-            </div>
+             {!user ? (
+               <div className="hidden md:block">
+                 <Button 
+                   variant="primary" 
+                   size="sm"
+                   className="rounded-full px-6 h-10 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 border-0 shadow-lg shadow-purple-500/25"
+                   onClick={signInWithGoogle}
+                   disabled={loading}
+                 >
+                   <LogIn size={16} />
+                   <span className="font-semibold">Sign In</span>
+                 </Button>
+               </div>
+             ) : (
+               <div className="hidden md:block">
+                 <UserMenu />
+               </div>
+             )}
 
-            {/* Mobile Menu Button */}
-            <motion.button
-              className="md:hidden relative z-10 w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              whileTap={{ scale: 0.9 }}
-              aria-label="Toggle menu"
-            >
-              <AnimatePresence mode="wait">
-                {isMobileMenuOpen ? (
-                  <motion.div
-                    key="close"
-                    initial={{ rotate: -90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: 90, opacity: 0 }}
-                    transition={{ duration: 0.15 }}
-                  >
-            <motion.button
-              className="md:hidden relative z-10 w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              whileTap={{ scale: 0.9 }}
-              aria-label="Toggle menu"
-            >
+             {/* Mobile Menu Button */}
+             <motion.button
+               className="md:hidden relative z-10 w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-colors"
+               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+               whileTap={{ scale: 0.95 }}
+               aria-label="Toggle menu"
+             >
               <AnimatePresence mode="wait">
                 {isMobileMenuOpen ? (
                   <motion.div
@@ -154,8 +165,8 @@ const Navbar = () => {
                 )}
               </AnimatePresence>
             </motion.button>
-          </nav>
-        </div>
+          </div>
+        </nav>
       </motion.header>
 
       {/* Mobile Menu Overlay */}
@@ -207,19 +218,53 @@ const Navbar = () => {
                     </motion.a>
                   ))}
                 </div>
-                <div className="mt-4 pt-4 border-t border-white/5">
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    className="w-full justify-center"
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      document.getElementById('events').scrollIntoView({ behavior: 'smooth' });
-                    }}
-                  >
-                    <span>Register Now</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </Button>
+                <div className="mt-4 pt-4 border-t border-white/10">
+                  {!user ? (
+                    <Button
+                      variant="primary"
+                      size="lg"
+                      className="w-full justify-center bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        signInWithGoogle();
+                      }}
+                      disabled={loading}
+                    >
+                      <LogIn className="w-5 h-5" />
+                      <span>Sign In with Google</span>
+                    </Button>
+                  ) : (
+                    <div className="space-y-3">
+                      {isAdmin && (
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          className="w-full justify-center"
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            navigate('/admin');
+                          }}
+                        >
+                          <Shield className="w-5 h-5" />
+                          <span>Admin Dashboard</span>
+                        </Button>
+                      )}
+                      <div className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-white/10">
+                        {user.photoURL ? (
+                          <img src={user.photoURL} alt={user.name} className="w-12 h-12 rounded-full ring-2 ring-purple-500/50" />
+                        ) : (
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                            <User size={24} className="text-white" />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white font-semibold text-base truncate">{user.name}</p>
+                          <p className="text-purple-400 text-sm font-medium">{user.rollNumber}</p>
+                          <p className="text-gray-400 text-xs truncate mt-0.5">{user.mobileNumber}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
